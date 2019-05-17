@@ -685,10 +685,10 @@ def verify_signature_for_vin(vin,utxo,tx_out):
     verifying_key = VerifyingKey.from_bytes(pk_str)
 
     if pubkey_as_addr != to_addr:
-        return Fasle
+        return False
     
     if not verifying_key.verify(signature, message):
-        return Fasle
+        return False
 
     return True
 
