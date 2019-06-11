@@ -144,8 +144,8 @@ class LittleMachine(object):
 
 
 if __name__ == "__main__":
-    from datatype import Vin,Vout
-    from ecc import SigningKey,convert_pubkey_to_addr
+    from .datatype import Vin,Vout
+    from .ecc import SigningKey,convert_pubkey_to_addr
 ##    k = 12356
 ##    k1 = 23464
 ##    sk = SigningKey.from_number(k)

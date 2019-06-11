@@ -584,7 +584,7 @@ def crack_by_bsgs(G, K):
         if str(R) in table.keys():
             i = table[str(R)]
             end_time = clock()
-            print ("Priv key: k = " + str(() % n))
+            print ("Priv key: k = " + str(() % m))
             print ("Time: " + str(round(end_time - start_time, 3)) + " secs")
             return i + j*m
 
