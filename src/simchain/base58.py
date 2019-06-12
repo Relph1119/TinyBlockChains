@@ -16,7 +16,6 @@ __version__ = '0.2.5'
 # 58 character alphabet used
 alphabet = b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
-
 if bytes == str:  # python2
     iseq, bseq, buffer = (
         lambda s: map(ord, s),
@@ -50,7 +49,7 @@ def b58encode_int(i, default_one=True):
     string = b""
     while i:
         i, idx = divmod(i, 58)
-        string = alphabet[idx:idx+1] + string
+        string = alphabet[idx:idx + 1] + string
     return string
 
 

@@ -10,54 +10,52 @@ class Stack(list):
     def peek(self):
         return self[-1]
 
-    
+
 class LittleMachine(object):
 
     def __init__(self):
         self.stack = Stack()
         self._map = {
-            "OP_ADD":          self.add,
-            "OP_MINUS":        self.minus,
-            "OP_MUL":          self.mul,
-            "OP_EQ":           self.equal_check,
-            "OP_EQUAL"    :    self.equal,
-            "OP_CHECKSIG":     self.check_sig,
-            "OP_ADDR":         self.calc_addr,
-            "OP_DUP"      :    self.dup,
-            "OP_NDUP"     :    self.ndup,
-            "OP_CHECKMULSIG" : self.check_mulsig,
-            "OP_MULHASH":      self.calc_mulhash,
-            }
+            "OP_ADD": self.add,
+            "OP_MINUS": self.minus,
+            "OP_MUL": self.mul,
+            "OP_EQ": self.equal_check,
+            "OP_EQUAL": self.equal,
+            "OP_CHECKSIG": self.check_sig,
+            "OP_ADDR": self.calc_addr,
+            "OP_DUP": self.dup,
+            "OP_NDUP": self.ndup,
+            "OP_CHECKMULSIG": self.check_mulsig,
+            "OP_MULHASH": self.calc_mulhash,
+        }
 
-
-    def set_script(self,script,message = b''):
+    def set_script(self, script, message=b''):
         self.clear()
         self.result = True
         self.pointer = 0
         self.message = message
         self.script = script
-        
 
     def clear(self):
         self.stack.clear()
-        
+
     def peek(self):
         return self.stack.peek()
-    
+
     def pop(self):
         return self.stack.pop()
 
-    def push(self,value):
+    def push(self, value):
         self.stack.push(value)
 
-    def evaluate(self,op):
+    def evaluate(self, op):
         if op in self._map:
             self._map[op]()
 
-        elif isinstance(op,str) or\
-             isinstance(op,bytes)or\
-             isinstance(op,int) or\
-             isinstance(op,bool):
+        elif isinstance(op, str) or \
+                isinstance(op, bytes) or \
+                isinstance(op, int) or \
+                isinstance(op, bool):
             self.push(op)
         else:
             logger.info('Uknow opcode: '.format(op))
@@ -87,7 +85,7 @@ class LittleMachine(object):
             self.result = False
 
     def equal(self):
-        self.push(self.pop()==self.pop())
+        self.push(self.pop() == self.pop())
 
     def calc_mulhash(self):
         n = self.pop()
@@ -96,15 +94,14 @@ class LittleMachine(object):
         for val in pk_strs[::-1]:
             s += val
         self.push(sha256d(s))
-        
 
     def check_sig(self):
         pk_str = self.pop()
         sig = self.pop()
         verifying_key = VerifyingKey.from_bytes(pk_str)
-        
+
         try:
-            flag = verifying_key.verify(sig,self.message)
+            flag = verifying_key.verify(sig, self.message)
         except Exception:
             flag = False
         self.push(flag)
@@ -118,25 +115,24 @@ class LittleMachine(object):
         for i in range(m):
             verifying_key = VerifyingKey.from_bytes(pk_strs[i])
             try:
-                flag = verifying_key.verify(sigs[i],self.message)
+                flag = verifying_key.verify(sigs[i], self.message)
             except Exception:
                 flag = False
             if not flag:
                 falg = False
                 break
         self.push(flag)
-        
 
     def calc_addr(self):
         pk_str = self.pop()
         self.push(convert_pubkey_to_addr(pk_str))
-        
+
     def run(self):
         while (self.pointer < len(self.script)):
             op = self.script[self.pointer]
             self.pointer += 1
             self.evaluate(op)
-            
+
         if not self.result:
             return False
         else:
